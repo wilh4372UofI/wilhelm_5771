@@ -1,0 +1,17 @@
+# Python for Machine Learning - PyTorch layer
+# University of Idaho CS 4771/5771 (Python 3.11+)
+#
+# Core stack plus PyTorch. Needed for HW3, HW4, and the deep-learning modules.
+# Install: pip install -r requirements-pytorch.txt
+#
+# TODO: compile to platform-specific hash-checked lock files (see requirements.txt).
+
+-r requirements.txt
+
+torch>=2.4,<3
+torchvision>=0.19,<1
+torchaudio>=2.4,<3
+
+# High-level training API demonstrated alongside the raw training loop
+lightning>=2.3,<3
+keras>=3.5,<4

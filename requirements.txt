@@ -1,0 +1,50 @@
+# Python for Machine Learning - Core Course Dependencies
+# University of Idaho CS 4771/5771
+#
+# Requires Python 3.11+.
+#
+# The course environment is split into layered requirement files so you only
+# install what your current module needs:
+#
+#   requirements.txt                    core data stack (this file; HW1-HW2)
+#   requirements-pytorch.txt            core + PyTorch (HW3, HW4, deep learning)
+#   requirements-nlp-advanced.txt       pytorch + NLP/transformers/MLOps stack
+#   requirements-tensorflow-optional.txt  optional legacy TensorFlow track
+#
+# Install the deepest layer you need; each file pulls in the layers above it
+# via `-r`. Example: pip install -r requirements-pytorch.txt
+#
+# TODO: compile these ranges into exact, hash-checked lock files per supported
+# platform (e.g. with `pip-compile --generate-hashes`); lock files are
+# platform-specific and are not committed yet.
+
+# Core data science
+numpy>=2.0,<3
+pandas>=3.0,<4
+scipy>=1.14,<2
+
+# Visualization
+matplotlib>=3.9,<4
+seaborn>=0.13,<0.14
+
+# Machine learning
+scikit-learn>=1.5,<2
+# On macOS xgboost also needs the OpenMP runtime, which its wheel does not
+# bundle: `brew install libomp`, or the import fails after a clean install.
+xgboost>=2.1,<4
+
+# Notebooks and development tooling
+jupyterlab>=4.2,<5
+pytest>=8,<10
+ruff>=0.9,<1
+
+# pandas optional I/O engines used in course examples (Parquet, Excel)
+pyarrow>=18,<26
+openpyxl>=3.1,<4
+
+# Columnar engines shown alongside pandas in the data-wrangling material
+polars>=1.0,<2
+duckdb>=1.0,<2
+
+# Used by the dimensionality-reduction chapter, which is core reading
+umap-learn>=0.5,<1
