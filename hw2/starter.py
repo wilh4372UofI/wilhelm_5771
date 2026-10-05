@@ -35,9 +35,11 @@ def mse_loss(X, y, theta):
     Returns:
         float: The mean squared error (a Python float or 0-d array).
     """
-    
-    loss = (1/n) * sum_i (X[i] @ theta - y[i])**2
-    return loss
+    predictions = X @ theta  # multiply the matrix and parameters
+    errors = predictions - y  # difference between predictions and actual target y
+    loss = np.mean(errors ** 2)  # what is the mean of the errors, squared?  return that.
+
+    return float(loss)  #cast the return as a float as requested.
 
 
 
@@ -54,7 +56,13 @@ def mse_gradient(X, y, theta):
     Returns:
         np.ndarray: Gradient vector, shape (d,).
     """
-    raise NotImplementedError
+    #like above, but more.
+    n = X.shape[0]    # n is the shape
+    predictions = X @ theta      # predictions
+    residual_vector = predictions - y     # residual vector, or "errors"
+    sum_of_weighted_errors = X.T @ residual_vector    # sum of weighted errors
+    grad = (2/n) * sum_of_weighted_errors   # gradient vector
+    return grad
 
 
 def gradient_descent(X, y, lr, epochs):
@@ -77,8 +85,14 @@ def gradient_descent(X, y, lr, epochs):
               each update. On well-conditioned data with a sensible ``lr``
               this must be non-increasing (the tests check this).
     """
-    raise NotImplementedError
-
+    d = X.shape[1]    # d is the number of features
+    theta = np.zeros(d)  # starting from theta = zeros.
+    loss_history = []    # empty list of history
+    for epoch in range(epochs):
+        theta = theta - lr * mse_gradient(X, y, theta)    # move theta in opposite direction of gradient
+        current_loss = mse_loss(X, y, theta)     # current loss with new theta
+        loss_history.append(current_loss)     # keep history
+    return theta, loss_history    # return the tuple of theta and the history
 
 def ridge_closed_form(X, y, alpha):
     """Ridge regression via the closed-form (normal-equation) solution.
@@ -99,8 +113,13 @@ def ridge_closed_form(X, y, alpha):
     Returns:
         np.ndarray: Parameters, shape (d,).
     """
-    raise NotImplementedError
-
+   # return np.linalg.solve(X.T @ X + alpha * np.eye(X.shape[1]), X.T @ y)
+    d = X.shape[1]   # number of features
+    I = np.identity(d)  # identity matrix of shape (d, d)
+    A = X.T @ X + alpha * I  # matrix to be inverted
+    b = X.T @ y  # right-hand side vector
+    theta = np.linalg.solve(A, b)   # solve the linear system for theta using lonalg.solve instead of inverting A (and introducing numeric instability)
+    return theta
 
 # ---------------------------------------------------------------------------
 # Part 2 — Logistic regression from scratch
