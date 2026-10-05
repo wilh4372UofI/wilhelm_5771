@@ -39,9 +39,7 @@ def mse_loss(X, y, theta):
     errors = predictions - y  # difference between predictions and actual target y
     loss = np.mean(errors ** 2)  # what is the mean of the errors, squared?  return that.
 
-    return float(loss)  #cast the return as a float as requested.
-
-
+    return float(loss)  #cast the return as a float as requested. session 8 page 3
 
 def mse_gradient(X, y, theta):
     """Gradient of ``mse_loss`` with respect to ``theta``.
@@ -62,7 +60,7 @@ def mse_gradient(X, y, theta):
     residual_vector = predictions - y     # residual vector, or "errors"
     sum_of_weighted_errors = X.T @ residual_vector    # sum of weighted errors
     grad = (2/n) * sum_of_weighted_errors   # gradient vector
-    return grad
+    return grad    # session 8 pages 4 and 5   
 
 
 def gradient_descent(X, y, lr, epochs):
@@ -92,7 +90,7 @@ def gradient_descent(X, y, lr, epochs):
         theta = theta - lr * mse_gradient(X, y, theta)    # move theta in opposite direction of gradient
         current_loss = mse_loss(X, y, theta)     # current loss with new theta
         loss_history.append(current_loss)     # keep history
-    return theta, loss_history    # return the tuple of theta and the history
+    return theta, loss_history    # return the tuple of theta and the history, session 8 pages 6 and 7
 
 def ridge_closed_form(X, y, alpha):
     """Ridge regression via the closed-form (normal-equation) solution.
@@ -114,12 +112,12 @@ def ridge_closed_form(X, y, alpha):
         np.ndarray: Parameters, shape (d,).
     """
    # return np.linalg.solve(X.T @ X + alpha * np.eye(X.shape[1]), X.T @ y)
-    d = X.shape[1]   # number of features
-    I = np.identity(d)  # identity matrix of shape (d, d)
-    A = X.T @ X + alpha * I  # matrix to be inverted
-    b = X.T @ y  # right-hand side vector
-    theta = np.linalg.solve(A, b)   # solve the linear system for theta using lonalg.solve instead of inverting A (and introducing numeric instability)
-    return theta
+    d = X.shape[1]     # number of features
+    I = np.identity(d)     # identity matrix of shape (d, d)
+    A = X.T @ X + alpha * I     # matrix to be inverted
+    b = X.T @ y       # right-hand side vector
+    theta = np.linalg.solve(A, b)   # solve the linear system for theta using linalg.solve instead of inverting A (and introducing numeric instability)
+    return theta    # session 9 pages 2 and 3
 
 # ---------------------------------------------------------------------------
 # Part 2 — Logistic regression from scratch
@@ -141,8 +139,9 @@ def sigmoid(z):
         np.ndarray or float: Sigmoid of ``z``, same shape, values in (0, 1)
             (0.0 / 1.0 at the saturated extremes is acceptable).
     """
-    raise NotImplementedError
-
+    z_clipped = np.clip(z, -500, 500)     # clip to avoid overflow
+    sigmoid_of_z = 1 / (1 + np.exp(-z_clipped))    # numerically stable sigmoid of z
+    return sigmoid_of_z              #session 10 pages 1 and 2
 
 def logistic_gradient(X, y, w):
     """Gradient of the mean logistic (cross-entropy) loss w.r.t. ``w``.
@@ -158,7 +157,13 @@ def logistic_gradient(X, y, w):
     Returns:
         np.ndarray: Gradient vector, shape (d,).
     """
-    raise NotImplementedError
+    # almost the same as above in the linear gradient
+    n = X.shape[0]    # n is the shape
+    predictions = sigmoid(X @ w)      # probabilities / predictions.  variable name is "w" for weights instead of "theta", but is still a 1D vector of shape (d,)
+    residual_vector = predictions - y     # residual vector, or "errors"
+    sum_of_weighted_errors = X.T @ residual_vector    # sum of weighted errors
+    grad = (1/n) * sum_of_weighted_errors   # scale by 1/n to get mean gradient
+    return grad   #  session 10 pages 4 and 5
 
 
 def predict_proba(X, w):
@@ -173,7 +178,9 @@ def predict_proba(X, w):
     Returns:
         np.ndarray: Probabilities in [0, 1], shape (n,).
     """
-    raise NotImplementedError
+    raw_model_outputs = X @ w    # linear combination of inputs and weights
+    probabilities = sigmoid(raw_model_outputs)    # apply sigmoid to get probabilities
+    return probabilities    # session 10 pages 5 and 6
 
 
 # ---------------------------------------------------------------------------
@@ -190,8 +197,8 @@ def build_pipeline():
         the scaler on each training fold only — no information from the
         validation fold leaks into preprocessing.
     """
-    raise NotImplementedError
-
+    pipeline = Pipeline([('scaler', StandardScaler()), ('classifier', LogisticRegression(max_iter=1000))])  
+    return pipeline   # session 11 page 10 and 11.
 
 def evaluate_with_cv(pipeline, X, y):
     """Mean 5-fold cross-validated accuracy of a pipeline.
@@ -207,4 +214,6 @@ def evaluate_with_cv(pipeline, X, y):
     Returns:
         float: Mean cross-validated accuracy, in [0, 1].
     """
-    raise NotImplementedError
+    scores = cross_val_score(pipeline, X, y, cv=5, scoring="accuracy")
+    mean_accuracy = scores.mean()
+    return float(mean_accuracy)   # session 11 page 10 and 11.
